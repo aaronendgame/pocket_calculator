@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<meta charset="UTF-8" />
+<head>
+	<title>Pocket Calculator - Endgame Coding Test</title>
+	<style>
+
+body {
+	font-family: Helvetica;
+	font-size: 25pt;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 100px;
+	width: 400px;
+	border: 2px solid #777;
+	padding: 15px;
+	box-shadow: 2px 2px 15px #ccc;
+}
+input[type=text] {
+	font-family: Helvetica;
+	font-size: 25pt;
+	width: 100%;
+	text-align: right;
+}
+span.in {
+	display: inline-block;
+	width: 60px;
+	height: 60px;
+	border: 1px solid black;
+	background: #ccc;
+	box-shadow: 0px 2px black;
+	border-radius: 5px;
+	text-align: center;
+	line-height: 57px;
+	cursor: pointer;
+}
+td[colspan="2"] > span.in {
+	 width: 125px;
+}
+td[rowspan="2"] > span.in {
+	 height: 125px;
+	 line-height: 120px;
+}
+span.in:hover {
+	background: orange;
+}
+table {
+	float: left; /*hack to make tables inline. we could nest tables, but this is easier*/
+	margin-right: 15px;
+}
+	</style>
+</head>
+<body>
+	<!--display-->
+	<form onsubmit="return false;">
+		<input type="text" id="buf" />
+	</form>
+	<!--buttons-->
+	<table>
+		<thead></thead>
+		<tbody>
+			<tr>
+				<td>
+					<span class="in">7</span>
+				</td>
+				<td>
+					<span class="in">8</span>
+				</td>
+				<td>
+					<span class="in">9</span>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<span class="in">4</span>
+				</td>
+				<td>
+					<span class="in">5</span>
+				</td>
+				<td>
+					<span class="in">6</span>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<span class="in">1</span>
+				</td>
+				<td>
+					<span class="in">2</span>
+				</td>
+				<td>
+					<span class="in">3</span>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<span class="in">0</span>
+				</td>
+				<td colspan="2">
+					<span class="in">=</span>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<table>
+		<thead></thead>
+		<tbody>
+			<tr>
+				<td>
+					<span class="in">+</span>
+				</td>
+				<td>
+					<span class="in">%</span>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<span class="in">-</span>
+				</td>
+				<td>
+					<span class="in">^</span>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<span class="in">*</span>
+				</td>
+				<td rowspan="2">
+					<span class="in">C</span>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<span class="in">/</span>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<!--fix container sizing due to inline hack-->
+	<div style="clear:both"></div>
+	
+	<script>
+//aliases to save typing
+function doc(x){
+	return document.getElementById(x);
+}
+function all(x){
+	return document.querySelectorAll(x);
+}
+
+//supported operations
+var ops = {
+	'+' : function(x,y) { return x+y; },
+	'-' : function(x,y) { return x-y; },
+	'/' : function(x,y) { return x/y; },
+	'*' : function(x,y) { return x*y; },
+	'%' : function(x,y) { return x%y; },
+	'^' : function(x,y) { return Math.pow(x,y); }
+};
+
+//some state variables
+var last = 0;
+var op = '+';
+var clear_after = false;
+
+//for each button
+var ins = all('span.in');
+for(var n in ins){
+	//when clicked, do the appropriate thing
+	ins[n].onclick = function(){
+		var t = this.innerHTML;
+		if(t=='='){
+			var cur = Number(doc('buf').value);
+			last = ops[op](last,cur);
+			doc('buf').value = last;
+			clear_after = true;
+		}
+		else if(ops[t]){
+			op = t;
+			last = Number(doc('buf').value);
+			clear_after = true;
+		}
+		else if(t=='C'){
+			doc('buf').value = '';
+			last = 0;
+			op = '+';
+		}
+		else{
+			if(clear_after){
+				doc('buf').value = '';
+				clear_after = false;
+			}
+			doc('buf').value += t;
+		}
+	}
+}
+	
+	</script>
+</body>
+</html>
+
